@@ -3,6 +3,7 @@
 ;;; Code:
 
 (require 'pomodoro-custom)
+(require 'cl-lib)
 
 (defun pomodoro-ideal-state (minutes)
   (cond ((< minutes 25) (cons 'ok minutes))
@@ -50,7 +51,7 @@
                  (concat text (make-string (- pomodoro-bar-length length) ?_))))
          (text (if (equal type 'pause) text (format "\n%d. %s" i text))))
     (propertize text 'font-lock-face
-                (case type
+                (cl-case type
                   (ok 'pomodoro-ok-face)
 		  (reset 'pomodoro-reset-face)
                   (pause 'pomodoro-pause-face)
@@ -65,14 +66,14 @@
         (when (equal (car item) 'ok)
 	  (setq i (1+ i))))))
   (insert (propertize "→\n\n" 'font-lock-face '(:weight bold)))
-  (loop for item in pomodoro-events
-        and extra = (if (equal (car pomodoro-current) 'ok) (cdr pomodoro-current) 0)
-        when (equal (car item) 'ok) sum (cdr item) into ok
-        when (equal (car item) 'reset) sum (cdr item) into reset
-        when (equal (car item) 'pause) sum (cdr item) into pause
-        finally (insert (format "Currently using %.2f%% of your time in full pomodoros."
-                                (/ (+ ok (or extra (cdr pomodoro-current))) 0.01
-                                   (+ 1e-20 ok reset pause (cdr pomodoro-current)))))))
+  (cl-loop for item in pomodoro-events
+           and extra = (if (equal (car pomodoro-current) 'ok) (cdr pomodoro-current) 0)
+           when (equal (car item) 'ok) sum (cdr item) into ok
+           when (equal (car item) 'reset) sum (cdr item) into reset
+           when (equal (car item) 'pause) sum (cdr item) into pause
+           finally (insert (format "Currently using %.2f%% of your time in full pomodoros."
+                                   (/ (+ ok (or extra (cdr pomodoro-current))) 0.01
+                                      (+ 1e-20 ok reset pause (cdr pomodoro-current)))))))
 
 (defun pomodoro-display-history ()
   "Displays the pomodoros done so far as a history log."
@@ -85,7 +86,7 @@
              (m-ok (format "Completed a pomodoro with %d minute%s\n" val (if (> val 1) "s" "")))
              (m-reset (format "Gave up after %d minute%s\n" val (if (> val 1) "s" "")))
              (m-pause (format "Had a break of %d minute%s\n" val (if (> val 1) "s" "")))
-             (message (case type
+             (message (cl-case type
                         (ok (propertize m-ok 'font-lock-face 'pomodoro-ok-face))
                         (reset (propertize m-reset 'font-lock-face 'pomodoro-reset-face))
                         (pause (propertize m-pause 'font-lock-face 'pomodoro-pause-face)))))
