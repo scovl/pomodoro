@@ -4,6 +4,7 @@
 
 (require 'pomodoro-custom)
 (require 'cl-lib)
+(require 'notifications)
 
 (defun pomodoro-ideal-state (minutes)
   (cond ((< minutes 25) (cons 'ok minutes))
@@ -53,9 +54,9 @@
     (propertize text 'font-lock-face
                 (cl-case type
                   (ok 'pomodoro-ok-face)
-		  (reset 'pomodoro-reset-face)
+                  (reset 'pomodoro-reset-face)
                   (pause 'pomodoro-pause-face)
-		  (t nil)))))
+                  (t nil)))))
 
 (defun pomodoro-display-tubes ()
   "Displays the pomodoros done so far as a series of tubes."
@@ -64,7 +65,7 @@
       (insert (pomodoro-tubes-string item i))
       (unless (equal (car item) 'pause)
         (when (equal (car item) 'ok)
-	  (setq i (1+ i))))))
+          (setq i (1+ i))))))
   (insert (propertize "→\n\n" 'font-lock-face '(:weight bold)))
   (cl-loop for item in pomodoro-events
            and extra = (if (equal (car pomodoro-current) 'ok) (cdr pomodoro-current) 0)
@@ -107,21 +108,35 @@
     (when (>= (- time pomodoro-last) (if pomodoro-debug 0 60))
       (setq pomodoro-current (cons type (1+ val)) pomodoro-last time)
       (when (and (equal type 'ok)
-		             (>= (1+ val) pomodoro-pomodoro-length))
+                 (>= (1+ val) pomodoro-pomodoro-length))
         (setq pomodoro-events (append pomodoro-events `((ok . ,pomodoro-pomodoro-length)))
               pomodoro-current '(pause . 0)))
-      (play-sound-file-async (if (equal (car pomodoro-current) 'ok) tick tack))))
-  (when (get-buffer pomodoro-buffer)
-    (with-current-buffer (get-buffer pomodoro-buffer)
-      (unlocking-buffer
-       (delete-region (point-min) (point-max))
-       (setq buffer-undo-tree nil)
-       (insert (propertize (format-time-string pomodoro-format)
-                           'font-lock-face 'pomodoro-time-face))
-       (insert "\n")
-       (if pomodoro-display-tubes
-	         (pomodoro-display-tubes)
-	       (pomodoro-display-history))))))
+      (play-sound-file-async (if (equal (car pomodoro-current) 'ok) tick tack)))
+    (when (get-buffer pomodoro-buffer)
+      (with-current-buffer (get-buffer pomodoro-buffer)
+        (unlocking-buffer
+         (delete-region (point-min) (point-max))
+         (setq buffer-undo-tree nil)
+         (insert (propertize (format-time-string pomodoro-format)
+                             'font-lock-face 'pomodoro-time-face))
+         (insert "\n")
+         (if pomodoro-display-tubes
+             (pomodoro-display-tubes)
+           (pomodoro-display-history))))))
+
+(defun play-pomodoro-sound (sound)
+  "Play sound for pomodoro."
+  (call-process pomodoro-sound-player nil 0 nil (expand-file-name sound)))
+
+(defun play-pomodoro-break-sound ()
+  "Play sound for break."
+  (interactive)
+  (play-pomodoro-sound pomodoro-break-start-sound))
+
+(defun play-pomodoro-work-sound ()
+  "Play sound for work."
+  (interactive)
+  (play-pomodoro-sound pomodoro-work-start-sound))
 
 (provide 'pomodoro-utils)
 ;;; pomodoro-utils.el ends here
