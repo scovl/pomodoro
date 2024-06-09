@@ -1,5 +1,7 @@
 ;;; pomodoro.el --- Simple and beautiful pomodoro timer
 
+(add-to-list 'load-path (expand-file-name "lisp" (file-name-directory load-file-name)))
+
 ;;; Code:
 
 (require 'pomodoro-custom)
