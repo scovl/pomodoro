@@ -32,5 +32,10 @@
 
 (global-set-key (kbd "<f12>") 'pomodoro)  ; Bind F12 to start Pomodoro timer
 
+(defun pomodoro-add-to-mode-line ()
+  (setq-default mode-line-format
+                (cons '(pomodoro-mode-line-string pomodoro-mode-line-string)
+                      mode-line-format)))
+
 (provide 'pomodoro)
 ;;; pomodoro.el ends here
