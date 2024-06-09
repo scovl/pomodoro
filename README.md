@@ -9,6 +9,9 @@ This Emacs package provides a simple and beautiful Pomodoro timer. The Pomodoro 
 - Optional sound notifications
 - Toggle between different display modes
 - Interactive commands for controlling the timer
+- System notifications for session transitions
+- Pause and resume functionality
+- Mode line display of timer status
 
 ## Installation
 
@@ -31,7 +34,8 @@ To use the Pomodoro timer in Emacs, you need to load the three files: `pomodoro.
 After setting up the Pomodoro timer, you can start using it with the following commands:
 
 - **Start the Pomodoro timer**: Press `F12` or run `M-x pomodoro`
-- **Pause the timer**: Press `S-<return>`
+- **Pause the timer**: Press `M-x pomodoro-pause`
+- **Resume the timer**: Press `M-x pomodoro-resume`
 - **Reset the timer**: Press `R`
 - **Quit the Pomodoro timer**: Press `Q`
 
@@ -42,9 +46,17 @@ You can customize various aspects of the Pomodoro timer by modifying the customi
 - `pomodoro-buffer-name`: The name of the Pomodoro buffer.
 - `pomodoro-bar-length`: The length of the Pomodoro bar in tubes mode.
 - `pomodoro-pomodoro-length`: The length of a Pomodoro session in minutes.
-- `pomodoro-format`: The time format for the Pomodoro clock.
-- `pomodoro-sound-tick`: The sound file for the tick sound.
-- `pomodoro-sound-tack`: The sound file for the tack sound.
+- `pomodoro-break-time`: The length of a break period in minutes.
+- `pomodoro-long-break-time`: The length of a long break period in minutes.
+- `pomodoro-nth-for-longer-break`: The number of work cycles before a longer break.
+- `pomodoro-break-start-message`: The message shown when a break starts.
+- `pomodoro-work-start-message`: The message shown when a work period starts.
+- `pomodoro-show-number`: Whether to show the number of the current Pomodoro in the mode line.
+- `pomodoro-desktop-notification`: Whether to show desktop notifications for session transitions.
+- `pomodoro-play-sounds`: Whether to play sounds for session transitions.
+- `pomodoro-sound-player`: The command used to play sound files.
+- `pomodoro-break-start-sound`: The sound file played when a break starts.
+- `pomodoro-work-start-sound`: The sound file played when a work period starts.
 
 To customize these variables, you can use `M-x customize-group` and enter `pomodoro`, or you can set them directly in your Emacs init file. For example:
 
