@@ -22,17 +22,74 @@
   "Time length of a Pomodoro round."
   :type 'integer :group 'pomodoro)
 
-(defvar pomodoro-format "%H:%M:%S"
-  "Time format for pomodoro clock.")
+(defcustom pomodoro-break-time 5
+  "Length of time in minutes for a break period."
+  :type 'integer :group 'pomodoro)
 
-(defvar pomodoro-dir (file-name-directory (or load-file-name buffer-file-name))
-  "Pomodoro directory in which sounds are stored.")
+(defcustom pomodoro-long-break-time 15
+  "Length of time in minutes for a long break period."
+  :type 'integer :group 'pomodoro)
 
-(defvar pomodoro-sound-tick (expand-file-name (concat pomodoro-dir "tick.wav"))
-  "Tick sound during a pomodoro run.")
+(defcustom pomodoro-nth-for-longer-break 4
+  "Number of work cycles before a longer break."
+  :type 'integer :group 'pomodoro)
 
-(defvar pomodoro-sound-tack (expand-file-name (concat pomodoro-dir "tack.wav"))
-  "Tack sound during a break.")
+(defcustom pomodoro-extra-time 2
+  "Number of minutes to add onto a timer when avoiding a cycle change."
+  :type 'integer :group 'pomodoro)
+
+(defcustom pomodoro-break-start-message "Break time!"
+  "Message shown when a break period starts."
+  :type 'string :group 'pomodoro)
+
+(defcustom pomodoro-work-start-message "Back to work!"
+  "Message shown when a work period starts."
+  :type 'string :group 'pomodoro)
+
+(defcustom pomodoro-long-break-start-message "Time for a longer break!"
+  "Message shown when a long break starts."
+  :type 'string :group 'pomodoro)
+
+(defcustom pomodoro-show-number nil
+  "Whether the number of the pomodoro in the series should be shown in the modeline."
+  :type 'boolean :group 'pomodoro)
+
+(defcustom pomodoro-desktop-notification nil
+  "Whether to show desktop notifications."
+  :type 'boolean :group 'pomodoro)
+
+(defcustom pomodoro-play-sounds t
+  "Should pomodoro play sounds when starting a new time period."
+  :type 'boolean :group 'pomodoro)
+
+(defcustom pomodoro-sound-player "mplayer"
+  "Music player used to play sounds."
+  :type 'string :group 'pomodoro)
+
+(defcustom pomodoro-break-start-sound ""
+  "Sound played when a break period starts."
+  :type 'string :group 'pomodoro)
+
+(defcustom pomodoro-work-start-sound ""
+  "Sound played when a work period starts."
+  :type 'string :group 'pomodoro)
+
+(defcustom pomodoro-time-format "%.2m:%.2s "
+  "Time string to display in mode line for countdowns.
+Formatted with `format-seconds`."
+  :type 'string :group 'pomodoro)
+
+(defcustom pomodoro-inhibit-prompting-messages t
+  "Whether to inhibit prompting messages."
+  :type 'boolean :group 'pomodoro)
+
+(defcustom pomodoro-start-work-hook nil
+  "Hook run when a pomodoro starts."
+  :type 'hook :group 'pomodoro)
+
+(defcustom pomodoro-start-break-hook nil
+  "Hook run when a break between pomodoros starts."
+  :type 'hook :group 'pomodoro)
 
 ;;; Faces
 (defface pomodoro-time-face
