@@ -71,4 +71,4 @@ If you find any bugs or have suggestions for improvements, feel free to open an 
 
 ## License
 
-This project is licensed under the GNU General Public License v2.0. For more details, see the [LICENSE](LICENSE) file.
+This project is licensed under the GNU General Public License v3.0. For more details, see the [LICENSE](LICENSE) file.

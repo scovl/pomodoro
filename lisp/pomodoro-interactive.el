@@ -1,4 +1,4 @@
-;;; pomodoro-interactive.el --- Interactive functions for Pomodoro timer
+;;; pomodoro-interactive.el --- Interactive functions for Pomodoro timer  -*- lexical-binding: nil; -*-
 
 ;;; Code:
 
@@ -25,6 +25,8 @@
 
 (defvar pomodoro-mode-line-string "")
 (defvar pomodoro-time-remaining)
+(defvar pomodoro-end-time nil
+  "Time when the current pomodoro period ends.")
 (defvar pomodoros 0)
 (defvar pomodoro-current-cycle nil)
 
@@ -73,6 +75,10 @@
              (kill-current-buffer)
              (pomodoro-set-events nil '(ok . 0)))
     (message "Pfew! That was close!")))
+
+(defun pomodoro-set-end-time (minutes)
+  "Set `pomodoro-end-time' to MINUTES from now."
+  (setq pomodoro-end-time (time-add (current-time) (seconds-to-time (* 60 minutes)))))
 
 (defun pomodoro-stick-to-the-grid ()
   (interactive)
@@ -158,6 +164,9 @@
                           (format-seconds pomodoro-time-format time))
                   pomodoro-current-cycle))
     (force-mode-line-update)))
+
+;; Forward declaration for notifications-notify (D-Bus dependent)
+(declare-function notifications-notify "notifications" &rest)
 
 (provide 'pomodoro-interactive)
 ;;; pomodoro-interactive.el ends here

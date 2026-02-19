@@ -1,4 +1,4 @@
-;;; pomodoro.el --- Simple and beautiful pomodoro timer
+;;; pomodoro.el --- Simple and beautiful pomodoro timer  -*- lexical-binding: nil; -*-
 
 (add-to-list 'load-path (expand-file-name "lisp" (file-name-directory load-file-name)))
 

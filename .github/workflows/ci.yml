@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  lint-and-compile:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        emacs-version: ['28.2', '29.4', '30.1']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Emacs
+        uses: purcell/setup-emacs@master
+        with:
+          version: ${{ matrix.emacs-version }}
+
+      - name: Check parentheses balance
+        run: |
+          emacs --batch --eval "
+          (let ((errors 0))
+            (dolist (f '(\"pomodoro-custom.el\"
+                        \"pomodoro.el\"
+                        \"lisp/pomodoro-utils.el\"
+                        \"lisp/pomodoro-interactive.el\"))
+              (message \"Checking parens: %s\" f)
+              (with-temp-buffer
+                (insert-file-contents f)
+                (goto-char (point-min))
+                (condition-case err
+                    (check-parens)
+                  (error
+                   (setq errors (1+ errors))
+                   (message \"PAREN ERROR in %s: %s\" f err)))))
+            (when (> errors 0)
+              (kill-emacs 1))
+            (message \"All parentheses balanced.\"))"
+
+      - name: Byte-compile all files
+        run: |
+          emacs --batch \
+            --eval "(add-to-list 'load-path \".\")" \
+            --eval "(add-to-list 'load-path \"lisp\")" \
+            --eval "(setq byte-compile-error-on-warn nil)" \
+            -f batch-byte-compile \
+            pomodoro-custom.el \
+            lisp/pomodoro-utils.el \
+            lisp/pomodoro-interactive.el \
+            pomodoro.el
+
+      - name: Load test
+        run: |
+          emacs --batch \
+            --eval "(add-to-list 'load-path \".\")" \
+            --eval "(add-to-list 'load-path \"lisp\")" \
+            --eval "
+          (condition-case err
+              (progn
+                (load \"pomodoro\")
+                (message \"Project loaded successfully\")
+                (dolist (fn '(pomodoro
+                              pomodoro-start
+                              pomodoro-pause
+                              pomodoro-resume
+                              pomodoro-stop
+                              pomodoro-update
+                              pomodoro-set-end-time
+                              pomodoro-interactive-quit
+                              pomodoro-interactive-reset))
+                  (unless (fboundp fn)
+                    (error \"Function %s is not defined\" fn))
+                  (message \"  ✓ %s\" fn))
+                (message \"All function checks passed.\"))
+            (error
+             (message \"LOAD ERROR: %S\" err)
+             (kill-emacs 1)))"
+
+      - name: Checkdoc lint
+        run: |
+          emacs --batch \
+            --eval "(add-to-list 'load-path \".\")" \
+            --eval "(add-to-list 'load-path \"lisp\")" \
+            --eval "
+          (require 'checkdoc)
+          (let ((warnings 0))
+            (dolist (f '(\"pomodoro-custom.el\"
+                        \"pomodoro.el\"
+                        \"lisp/pomodoro-utils.el\"
+                        \"lisp/pomodoro-interactive.el\"))
+              (message \"Checkdoc: %s\" f)
+              (with-current-buffer (find-file-noselect f)
+                (condition-case err
+                    (let ((checkdoc-spellcheck-documentation-flag nil))
+                      (checkdoc-current-buffer t))
+                  (error
+                   (setq warnings (1+ warnings))
+                   (message \"  Warning: %s\" err)))))
+            (message \"Checkdoc completed with %d issue(s).\" warnings))"

@@ -1,10 +1,20 @@
-;;; pomodoro-utils.el --- Utility functions for Pomodoro timer
+;;; pomodoro-utils.el --- Utility functions for Pomodoro timer  -*- lexical-binding: nil; -*-
 
 ;;; Code:
 
 (require 'pomodoro-custom)
 (require 'cl-lib)
-(require 'notifications)
+(when (featurep 'dbusbind)
+  (require 'notifications))
+
+;; Forward declarations for variables defined in pomodoro-interactive.el
+(defvar pomodoro-events)
+(defvar pomodoro-current)
+(defvar pomodoro-last)
+(defvar pomodoro-debug)
+(defvar pomodoro-display-tubes)
+(defvar buffer-undo-tree nil
+  "Undo-tree buffer variable (from undo-tree package).")
 
 (defun pomodoro-ideal-state (minutes)
   (cond ((< minutes 25) (cons 'ok minutes))
@@ -29,9 +39,9 @@
 
 (defmacro unlocking-buffer (&rest body)
   "Macro that allows safer manipulation of a read-only buffer."
-  `(progn (toggle-read-only -1)
+  `(progn (read-only-mode -1)
           ,@body
-          (toggle-read-only 1)))
+          (read-only-mode 1)))
 
 (defun pomodoro-set-events (events new-status)
   "Sets both the event history and the current status."
@@ -122,7 +132,7 @@
          (insert "\n")
          (if pomodoro-display-tubes
              (pomodoro-display-tubes)
-           (pomodoro-display-history))))))
+           (pomodoro-display-history)))))))
 
 (defun play-pomodoro-sound (sound)
   "Play sound for pomodoro."

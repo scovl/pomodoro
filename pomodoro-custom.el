@@ -1,4 +1,4 @@
-;;; pomodoro-custom.el --- Custom settings for Pomodoro timer
+;;; pomodoro-custom.el --- Custom settings for Pomodoro timer  -*- lexical-binding: nil; -*-
 
 ;;; Code:
 
@@ -12,7 +12,8 @@
   "Name of the Pomodoro buffer."
   :type 'string :group 'pomodoro)
 
-(defvaralias 'pomodoro-buffer 'pomodoro-buffer-name)
+(defvaralias 'pomodoro-buffer 'pomodoro-buffer-name
+  "Alias for `pomodoro-buffer-name'.")
 
 (defcustom pomodoro-bar-length 25
   "Length of a pomodoro bar in tubes mode."
@@ -51,7 +52,7 @@
   :type 'string :group 'pomodoro)
 
 (defcustom pomodoro-show-number nil
-  "Whether the number of the pomodoro in the series should be shown in the modeline."
+  "Whether to show the pomodoro number in the modeline."
   :type 'boolean :group 'pomodoro)
 
 (defcustom pomodoro-desktop-notification nil
@@ -72,6 +73,18 @@
 
 (defcustom pomodoro-work-start-sound ""
   "Sound played when a work period starts."
+  :type 'string :group 'pomodoro)
+
+(defcustom pomodoro-sound-tick nil
+  "Sound file played on tick events."
+  :type '(choice (const nil) string) :group 'pomodoro)
+
+(defcustom pomodoro-sound-tack nil
+  "Sound file played on tack events."
+  :type '(choice (const nil) string) :group 'pomodoro)
+
+(defcustom pomodoro-format "%H:%M"
+  "Format string for displaying the current time."
   :type 'string :group 'pomodoro)
 
 (defcustom pomodoro-time-format "%.2m:%.2s "
